@@ -1,0 +1,8 @@
+<md-nav-list [@slide]="sidepanel.state | async">
+    <a md-list-item routerLink="/forced-api" routerLinkActive="active" [@slide]="state">
+        <md-icon>cloud_queue</md-icon> <span [@reveal]="state">Forced Interface</span>
+    </a>
+    <a md-list-item routerLink="/failed-api" routerLinkActive="active" [@slide]="state">
+        <md-icon>cloud_off</md-icon> <span [@reveal]="state">Failed Interface</span>
+    </a>
+</md-nav-list>

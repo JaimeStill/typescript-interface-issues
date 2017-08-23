@@ -25,16 +25,16 @@ export class CoreDataSource<TItem extends IProperty> extends DataSource<any> {
         ];
 
         return Observable.merge(...displayDataChanges).map(() => {
-            try {
-                this.filteredData = this.service.data.value.slice().filter((item: TItem) => {
+            this.filteredData = this.service.data.value.slice().filter((item: TItem) => {
+                try {
                     const searchStr = item.filter.toLowerCase();
                     return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
-                });
+                } catch (error) {
+                    this.toaster.sendErrorMessage(`item.filter.toLowerCase(): ${error}`);
+                }
+            });
 
-                return this.filteredData;
-            } catch (error) {
-                this.toaster.sendErrorMessage(error);
-            }
+            return this.filteredData;
         });
     }
 

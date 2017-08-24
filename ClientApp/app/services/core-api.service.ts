@@ -39,7 +39,7 @@ export class CoreApiService {
     }
 
     get<T>(url: string): Observable<T> {
-        return this.http.get<T>(url)
+        return this.http.get(url)
             .map(this.extractData)
             .catch(this.handleError);
     }

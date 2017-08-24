@@ -40,7 +40,10 @@ export class CoreApiService {
 
     get<T>(url: string): Observable<T> {
         return this.http.get(url)
-            .map(this.extractData)
+            .map(res => {
+                const data = res.json() as T;
+                return data;
+            })
             .catch(this.handleError);
     }
 

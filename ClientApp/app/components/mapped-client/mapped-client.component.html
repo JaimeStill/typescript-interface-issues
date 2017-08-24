@@ -30,20 +30,9 @@
         <prism language="typescript">
 getInstantiatedData() &#123;
     this.http.get('/api/app/getData').map(res =&gt; &#123;
-        try &#123;
-            const result = new Array&lt;Data&gt;();
-            const data: Data[] = res.json();
-            
-            data.forEach(item =&gt; &#123;
-                result.push(Object.assign(new Data(), item));
-            &#125;);
-            
-            return result;
-            
-        &#125; catch (error) &#123;
-            this.toaster.sendErrorMessage(error);
-            return;
-        &#125;
+        return res.json().map(d =&gt; &#123;
+            return Object.assign(new Data(), d)
+        &#125;);
     &#125;).catch(this.coreApi.handleError)
     .subscribe(data =&gt; &#123;
         this.data.next(data);

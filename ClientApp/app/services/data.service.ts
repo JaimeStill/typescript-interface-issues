@@ -38,20 +38,9 @@ export class DataService implements IService<Data> {
 
     getInstantiatedData() {
         this.http.get('/api/app/getData').map(res => {
-            try {
-                const result = new Array<Data>();
-                const data: Data[] = res.json();
-
-                data.forEach(item => {
-                    result.push(Object.assign(new Data(), item));
-                });
-
-                return result;
-
-            } catch (error) {
-                this.toaster.sendErrorMessage(error);
-                return;
-            }
+            return res.json().map(d => {
+                return Object.assign(new Data(), d)
+            });
         }).catch(this.coreApi.handleError)
         .subscribe(data => {
             this.data.next(data);

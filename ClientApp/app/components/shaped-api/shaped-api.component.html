@@ -1,0 +1,88 @@
+<md-toolbar>Shaped API Model</md-toolbar>
+<p>
+    In this example, the C# model serialized to JSON by Web API is shaped in a way that matches the class definition for
+    <code class="snippet">data.model.ts</code> to include a readonly <code class="snippet">filter</code> property that returns the value of <code class="snippet">displayName</code>.
+</p>
+<div class="table-container mat-elevation-z8">
+    <div class="filter-header">
+        <md-input-container floatPlaceholder="never">
+            <input mdInput #filter placeholder="Filter Data">
+        </md-input-container>
+    </div>
+    <md-table #table [dataSource]="dataSource">
+        <ng-container cdkColumnDef="id">
+            <md-header-cell *cdkHeaderCellDef> ID </md-header-cell>
+            <md-cell *cdkCellDef="let row"> {{row.id}} </md-cell>
+        </ng-container>
+        <ng-container cdkColumnDef="displayName">
+            <md-header-cell *cdkHeaderCellDef> Name </md-header-cell>
+            <md-cell *cdkCellDef="let row"> {{row.displayName}} </md-cell>
+        </ng-container>
+        <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
+        <md-row *cdkRowDef="let row; columns: displayedColumns"></md-row>
+    </md-table>
+</div>
+<md-toolbar color="primary">Code</md-toolbar>
+<md-tab-group>
+    <md-tab label="ShapedDataModel.cs">
+        <prism language="csharp">
+public class ShapedDataModel
+&#123;
+    public int id &#123; get; set; &#125;
+    public string displayName &#123; get; set; &#125;
+    public string filter
+    &#123;
+        get &#123; return displayName; &#125;
+    &#125;
+&#125;
+        </prism>
+    </md-tab>
+    <md-tab label="AppExtensions.cs">
+        <prism language="csharp">
+public static Task&lt;List&lt;ShapedDataModel&gt;&gt; GetShapedData()
+&#123;
+    return Task.Run(() =&gt;
+    &#123;
+        return new List&lt;ShapedDataModel&gt;()
+        &#123;
+            new ShapedDataModel &#123; id = 1, displayName = "TypeScript" &#125;,
+            new ShapedDataModel &#123; id = 2, displayName = "Angular" &#125;,
+            new ShapedDataModel &#123; id = 3, displayName = "ASP.NET Core" &#125;,
+            new ShapedDataModel &#123; id = 4, displayName = "Material" &#125;,
+            new ShapedDataModel &#123; id = 5, displayName = "Webpack" &#125;
+        &#125;;
+    &#125;);
+&#125;
+        </prism>
+    </md-tab>
+    <md-tab label="AppController.cs">
+        <prism language="csharp">
+[HttpGet("[action]")]
+public async Task&lt;IEnumerable&lt;ShapedDataModel&gt;&gt; GetShapedData()
+&#123;
+    return await AppExtensions.GetShapedData();
+&#125;
+        </prism>
+    </md-tab>
+    <md-tab label="data.service.ts">
+        <prism language="typescript">
+getShapedData() &#123;
+    this.coreApi.get&lt;Data[]&gt;('/api/app/getShapedData').subscribe(
+        data =&gt; &#123;
+            this.data.next(data);
+        &#125;,
+        error =&gt; &#123;
+            this.toaster.sendErrorMessage(error);
+        &#125;
+    );
+&#125;
+        </prism>
+    </md-tab>
+    <md-tab label="shaped-api.component.ts">
+        <prism language="typescript">
+constructor(private data: DataService, private toaster: ToasterService) &#123;
+    data.getShapedData();
+&#125;
+        </prism>
+    </md-tab>
+</md-tab-group>

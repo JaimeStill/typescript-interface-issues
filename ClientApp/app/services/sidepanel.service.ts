@@ -9,7 +9,7 @@ export class SidepanelService {
         'full'
     ];
 
-    state = new BehaviorSubject<string>('thin');
+    state = new BehaviorSubject<string>('full');
 
     toggleState() {
         const index = this.panelStates.indexOf(this.state.value);

@@ -1,8 +1,14 @@
 <md-nav-list [@slide]="sidepanel.state | async">
-    <a md-list-item routerLink="/forced-api" routerLinkActive="active" [@slide]="state">
-        <md-icon>cloud_queue</md-icon> <span [@reveal]="state">Forced Interface</span>
+    <a md-list-item routerLink="/home" routerLinkActive="active" [@slide]="state">
+        <md-icon>home</md-icon> <span [@reveal]="state">Home</span>
     </a>
-    <a md-list-item routerLink="/failed-api" routerLinkActive="active" [@slide]="state">
-        <md-icon>cloud_off</md-icon> <span [@reveal]="state">Failed Interface</span>
+    <a md-list-item routerLink="/plain-json" routerLinkActive="active" [@slide]="state">
+        <md-icon>code</md-icon> <span [@reveal]="state">Plain JSON Object</span>
+    </a>
+    <a md-list-item routerLink="/mapped-client" routerLinkActive="active" [@slide]="state">
+        <md-icon>code</md-icon> <span [@reveal]="state">Mapped Client Type</span>
+    </a>
+    <a md-list-item routerLink="/shaped-api" routerLinkActive="active" [@slide]="state">
+        <md-icon>code</md-icon> <span [@reveal]="state">Shaped API Type</span>
     </a>
 </md-nav-list>

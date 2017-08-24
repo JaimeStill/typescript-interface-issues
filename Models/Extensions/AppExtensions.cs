@@ -36,17 +36,17 @@ namespace api_interface_issues.Models.Extensions
             });
         }
 
-        public static Task<List<ForcedDataModel>> GetForcedData()
+        public static Task<List<ShapedDataModel>> GetShapedData()
         {
             return Task.Run(() =>
             {
-                return new List<ForcedDataModel>()
+                return new List<ShapedDataModel>()
                 {
-                    new ForcedDataModel { id = 1, displayName = "TypeScript" },
-                    new ForcedDataModel { id = 2, displayName = "Angular" },
-                    new ForcedDataModel { id = 3, displayName = "ASP.NET Core" },
-                    new ForcedDataModel { id = 4, displayName = "Material" },
-                    new ForcedDataModel { id = 5, displayName = "Webpack" }
+                    new ShapedDataModel { id = 1, displayName = "TypeScript" },
+                    new ShapedDataModel { id = 2, displayName = "Angular" },
+                    new ShapedDataModel { id = 3, displayName = "ASP.NET Core" },
+                    new ShapedDataModel { id = 4, displayName = "Material" },
+                    new ShapedDataModel { id = 5, displayName = "Webpack" }
                 };
             });
         }

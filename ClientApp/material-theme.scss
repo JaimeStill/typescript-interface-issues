@@ -1,9 +1,11 @@
 @import 'material-toaster.scss';
-
+@import 'material-prism.scss';
 $default-theme: mat-light-theme(mat-palette($mat-green, A400), mat-palette($mat-light-blue, A400));
 @include angular-material-theme($default-theme);
-
-html, body, app, .app-frame {
+html,
+body,
+app,
+.app-frame {
     overflow: hidden;
     margin: 0;
     height: 100%;
@@ -40,16 +42,19 @@ md-card.mat-card {
     margin-bottom: 20px;
 }
 
-code.snippet,
-.app-body a.link,
 .active.active div.mat-list-item-content,
 .md-option.mat-selected.map-primary,
 .mat-primary .mat-option.mat-selected {
     color: map-get($mat-green, A400);
 }
 
-.app-body a.link:visited {
-    color: map-get($mat-light-blue, A400);
+code.snippet,
+.app-panel a.link {
+    color: map-get($mat-green, A700);
+}
+
+.app-panel a.link:visited {
+    color: map-get($mat-light-blue, A700);
 }
 
 $green-primary: mat-palette($mat-green, A400);
@@ -58,22 +63,24 @@ $red-primary: mat-palette($mat-red);
 $blue-accent: mat-palette($mat-blue);
 $red-warn: mat-palette($mat-deep-orange);
 $yellow-accent: mat-palette($mat-yellow);
-
 .green-light {
     $default-theme: mat-light-theme($green-primary, $light-blue-accent);
     @include angular-material-theme($default-theme);
 }
 
 .green-light code.snippet,
-.green-light .app-body a.link,
+.green-light .app-panel a.link {
+    color: map-get($mat-green, A700);
+}
+
 .green-light .active.active div.mat-list-item-content,
 .green-light .md-option.mat-selected.map-primary,
 .green-light .mat-primary .mat-option.mat-selected {
     color: map-get($mat-green, A400);
 }
 
-.green-light .app-body a.link:visited {
-    color: map-get($mat-light-blue, A400);
+.green-light .app-panel a.link:visited {
+    color: map-get($mat-light-blue, A700);
 }
 
 .red-light {
@@ -82,15 +89,18 @@ $yellow-accent: mat-palette($mat-yellow);
 }
 
 .red-light code.snippet,
-.red-light .app-body a.link,
+.red-light .app-panel a.link {
+    color: map-get($mat-red, 700);
+}
+
 .red-light .active.active div.mat-list-item-content,
 .red-light .md-option.mat-selected.map-primary,
 .red-light .mat-primary .mat-option.mat-selected {
     color: map-get($mat-red, 500);
 }
 
-.red-light .app-body a.link:visited {
-    color: map-get($mat-blue, 500);
+.red-light .app-panel a.link:visited {
+    color: map-get($mat-blue, 700);
 }
 
 .blue-light {
@@ -99,15 +109,18 @@ $yellow-accent: mat-palette($mat-yellow);
 }
 
 .blue-light code.snippet,
-.blue-light .app-body a.link,
+.blue-light .app-panel a.link {
+    color: map-get($mat-light-blue, A700);
+}
+
 .blue-light .active.active div.mat-list-item-content,
 .blue-light .md-option.mat-selected.map-primary,
 .blue-light .mat-primary .mat-option.mat-selected {
     color: map-get($mat-light-blue, A400);
 }
 
-.blue-light .app-body a.link:visited {
-    color: map-get($mat-yellow, 500);
+.blue-light .app-panel a.link:visited {
+    color: map-get($mat-yellow, 700);
 }
 
 .default sidepanel md-nav-list.mat-nav-list,

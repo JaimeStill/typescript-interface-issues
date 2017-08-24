@@ -26,9 +26,9 @@ namespace api_interface_issues.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IEnumerable<ForcedDataModel>> GetForcedData()
+        public async Task<IEnumerable<ShapedDataModel>> GetShapedData()
         {
-            return await AppExtensions.GetForcedData();
+            return await AppExtensions.GetShapedData();
         }
     }
 }

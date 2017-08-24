@@ -1,0 +1,319 @@
+<md-toolbar>Synopsis</md-toolbar>
+<p>
+    This demonstration was put together as a result of running into a big issue I have with the TypeScript language.
+    This issue was discovered when I attempted to make use of TypeScript <a class="link" href="http://www.typescriptlang.org/docs/handbook/generics.html" target="_blank">Generics</a>
+    and <a class="linK" href="http://www.typescriptlang.org/docs/handbook/interfaces.html" target="_blank">Interfaces</a> to create
+    a re-usable <a class="link" href="https://material.angular.io/components/table/api" target="_blank">Data Source</a> that
+    can work with any data type that may be exposed to a <code class="snippet">md-table</code>.
+</p>
+<md-toolbar>References</md-toolbar>
+<p>
+    The following references are what lead me to believe that this would work without having to:
+</p>
+<ol>
+    <li>Explicitly provide the filter property in the server-side model</li>
+    <li>Directly instantiate each JSON object after it is received</li>
+</ol>
+<md-nav-list>
+    <a md-list-item href="http://www.typescriptlang.org/docs/handbook/interfaces.html#class-types" target="_blank">Implementing an Interface</a>
+    <a md-list-item href="http://www.typescriptlang.org/docs/handbook/generics.html#generic-constraints" target="_blank">Generic Constraints</a>
+    <a md-list-item href="https://angular.io/guide/http#typechecking-the-response" target="_blank">Typechecking the Response</a>
+</md-nav-list>
+<p>
+    First link excerpt:
+</p>
+<blockquote>
+    One of the most common uses of interfaces in languages like C# and Java, that of explicitly envorcing that a class meets a particular contract, is also possible in TypeScript.
+</blockquote>
+<p>
+    Second link excerpt:
+</p>
+<blockquote>
+    ... you may sometimes want to write a generic function that works on a set of types where you have some knowledge about what capabilities that set of types will have.
+    ... Instead of working with any and all types, we'd like to constrain this function to work with any and all types that also have (a given property).
+    ... To do so, we'll create an interface that describes our constraint.
+</blockquote>
+<p>
+    Third link exceprt:
+</p>
+<blockquote>
+    In the above example, the data['results'] field access stands out because you use bracket notation to access the results field. If you tried to write
+    <code class="snippet">data.results</code>, TypeScript would correctly complain that the <code class="snippet">Object</code> coming back from HTTP
+    does not have a <code class="snippet">results</code> property. That's because while <code class="snippet">HttpClient</code> parsed the JSON
+    response into an <code class="snippet">Object</code>, it doesn't know what shape that object is. You can, however, tell <code class="snippet">HttpClient</code>
+    what type the response will be, which is recommended. To do so, first you define an interface with the correct shape:
+</blockquote>
+<prism language="typescript" class="prism-snippet">
+interface ItemsResponse &#123;
+    results: string[];
+&#125;
+</prism>
+<blockquote>
+    Then, when you make the <code class="snippet">HttpClient.get</code> call, pass a type parameter:
+</blockquote>
+<prism language="typescript" class="prism-snippet">
+http.get&lt;ItemsResponse&gt;('/api/items').subscribe(data =&gt; &#123;
+    // data is now an instance of type ItemsResponse, so you can do this:
+    this.results = data.results;
+)&#125;
+</prism>
+<md-toolbar>Setup</md-toolbar>
+<p>
+    The following illustrates the core features created to facilitate this functionality, independent of any implementation.
+</p>
+<md-card>
+    <md-card-content>
+        <h3>iproperty.interface.ts</h3>
+        <prism language="typescript">
+export interface IProperty &#123;
+    filter: string;
+&#125;
+        </prism>
+        <p>
+            The intent of this interface is to expose a property named <code class="snippet">filter</code>, which can be used to specify on any
+            class that implements this interface the property that will be used for filtering.
+        </p>
+    </md-card-content>
+</md-card>
+<md-card>
+    <md-card-content>
+        <h3>iservice.interface.ts</h3>
+        <prism language="typescript">
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+                
+export interface IService&lt;T&gt; &#123;
+data: BehaviorSubject&lt;Array&lt;T&gt;&gt;;
+&#125;
+        </prism>
+    </md-card-content>
+    <p>
+        Allows you to specify that the service you are referencing has a collection of a type <code class="snippet">T</code>
+        embedded inside of a <code class="snippet">BehaviorSubject</code>.
+    </p>
+</md-card>
+<md-card>
+    <md-card-content>
+        <h3>core.datasource.ts</h3>
+        <prism language="typescript">
+import &#123; DataSource &#125; from '@angular/cdk';
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+import &#123; Observable &#125; from 'rxjs/Observable';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/operator/map';
+import &#123; ToasterService &#125; from '../services/toaster.service';
+import &#123; IService &#125; from '../interfaces/iservice.interface';
+import &#123; IProperty &#125; from '../interfaces/iproperty.interface';
+                
+export class CoreDataSource&lt;TItem extends IProperty&gt; extends DataSource&lt;any&gt; &#123;
+    filterChange = new BehaviorSubject('');
+    filteredData: TItem[];
+    get filter(): string &#123; return this.filterChange.value; &#125;
+    set filter(filter: string) &#123; this.filterChange.next(filter); &#125;
+                
+    constructor(private service: IService&lt;TItem&gt;, private toaster: ToasterService) &#123;
+        super();
+        this.filteredData = service.data.value.slice();
+    &#125;
+                
+    connect(): Observable&lt;TItem[]&gt; &#123;
+        const displayDataChanges = [
+            this.service.data,
+            this.filterChange
+        ];
+                
+        return Observable.merge(...displayDataChanges).map(() =&gt; &#123;
+            this.filteredData = this.service.data.value.slice().filter((item: TItem) =&gt; &#123;
+                try &#123;
+                    const searchStr = item.filter.toLowerCase();
+                    return searchStr.indexOf(this.filter.toLowerCase()) !== -1;
+                &#125; catch (error) &#123;
+                    this.toaster.sendErrorMessage(`item.filter.toLowerCase(): $&#123;error&#125;`);
+                &#125;
+            &#125;);
+                
+            return this.filteredData;
+        &#125;);
+    &#125;
+                
+    disconnect() &#123; &#125;
+&#125;
+        </prism>
+        <p>
+            The generic implementation of a <code class="snippet">DataSource</code> class that allows the objects it is tracking
+            to be filtered. The service provided in the constructor will be an instance of <code class="snippet">IService&lt;TItem&gt;</code>,
+            so we can expect to have access to a <code class="snippet">this.service.data: BehaviorSubject&lt;TItem[]&gt;</code> property.
+            Because of the <code class="snippet">IProperty</code> constraint on the generic definition, each item
+            in the collection should have a <code class="snippet">filter: string</code> property.
+        </p>
+    </md-card-content>
+</md-card>
+<md-toolbar>Test</md-toolbar>
+<md-card>
+    <md-card-content>
+        <h3>data.model.ts</h3>
+        <prism language="typescript">
+import &#123; IProperty &#125; from '../interfaces/iproperty.interface';
+                
+export class Data implements IProperty &#123;
+    id: number;
+    displayName: string;
+    get filter(): string &#123; return this.displayName &#125;
+&#125;
+        </prism>
+        <p>
+            This model, which implements <code class="snippet">IProperty</code>, specifies the <code class="snippet">filter</code>
+            property as a read-only property that returns the value of <code class="snippet">displayName</code>. This is the mechanism
+            that enables what I mentioned above, specifying the property on a class that will be used to filter instances of a class
+            that are part of a collection.
+        </p>
+    </md-card-content>
+</md-card>
+<md-card>
+    <md-card-content>
+        <h3>core-api.service.ts</h3>
+        <prism language="typescript">
+import &#123; Injectable &#125; from '@angular/core';
+import &#123; Http, Response, RequestOptions, Headers &#125; from '@angular/http';
+import &#123; Observable &#125; from 'rxjs/Observable';
+import 'rxjs/add/observable/throw';
+                
+@Injectable()
+export class CoreApiService &#123;
+    constructor(private http: Http) &#123;&#125;
+                
+    extractData(res: Response) &#123;
+        try &#123;
+            return res.json() || &#123;&#125;;
+        &#125; catch (error) &#123;
+            return res;
+        &#125;
+    &#125;
+                
+    handleError(error: Response | any) &#123;
+        let errMsg: string;
+                
+        if (error instanceof Response) &#123;
+            const body = error.json() || '';
+            const err = body.error || body.Message || JSON.stringify(body);
+            errMsg = `$&#123;err&#125;`;
+        &#125; else &#123;
+            errMsg = error.message ? error.message : error.toString();
+        &#125;
+                
+        console.error(errMsg);
+        return Observable.throw(errMsg);
+    &#125;
+                
+    getRequestOptions(): RequestOptions &#123;
+        const headers = new Headers(&#123;
+            'Content-Type': 'application/json'
+        &#125;);
+                
+        return new RequestOptions(&#123; headers: headers &#125;);
+    &#125;
+                
+    get&lt;T&gt;(url: string): Observable&lt;T&gt; &#123;
+        return this.http.get&lt;T&gt;(url)
+            .map(this.extractData)
+            .catch(this.handleError);
+    &#125;
+                
+    post&lt;T&gt;(url: string, body: string, options?: RequestOptions): Observable&lt;T&gt; &#123;
+        return this.http.post(url, body, options ? options : this.getRequestOptions())
+            .map(this.extractData)
+            .catch(this.handleError);
+    &#125;
+&#125;
+        </prism>
+        <p>
+            A utility service that abstracts a lot of common functionality from the process of writing <code class="snippet">http</code>
+            functions. It is included to avoid confusion when <code class="snippet">DataService</code> is defined.
+        </p>
+    </md-card-content>
+</md-card>
+<md-card>
+    <md-card-content>
+        <h3>data.service.ts</h3>
+        <prism language="typescript">
+import &#123; Injectable &#125; from '@angular/core';
+import &#123; Http &#125; from '@angular/http';
+import &#123; Data &#125; from '../models/data.model';
+import &#123; BehaviorSubject &#125; from 'rxjs/BehaviorSubject';
+import &#123; IService &#125; from '../interfaces/iservice.interface';
+import &#123; CoreApiService &#125; from './core-api.service';
+import &#123; ToasterService &#125; from './toaster.service';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+                
+@Injectable()
+export class DataService implements IService&lt;Data&gt; &#123;
+    data = new BehaviorSubject&lt;Array&lt;Data&gt;&gt;([]);
+                
+    constructor(private http: Http, private coreApi: CoreApiService, private toaster: ToasterService) &#123;&#125;
+                
+    getData() &#123;
+        this.coreApi.get&lt;Data[]&gt;('/api/app/getData').subscribe(
+            data =&gt; &#123;
+                this.data.next(data);
+            &#125;,
+            error =&gt; &#123;
+                this.toaster.sendErrorMessage(error);
+            &#125;
+        )
+    &#125;
+                
+    getShapedData() &#123;
+        this.coreApi.get&lt;Data[]&gt;('/api/app/getShapedData').subscribe(
+            data =&gt; &#123;
+                this.data.next(data);
+            &#125;,
+            error =&gt; &#123;
+                this.toaster.sendErrorMessage(error);
+            &#125;
+        )
+    &#125;
+                
+    getInstantiatedData() &#123;
+        this.http.get('/api/app/getData').map(res =&gt; &#123;
+            try &#123;
+                const result = new Array&lt;Data&gt;();
+                const data: Data[] = res.json();
+                
+                data.forEach(item =&gt; &#123;
+                    result.push(Object.assign(new Data(), item));
+                &#125;);
+                
+                return result;
+                
+            &#125; catch (error) &#123;
+                this.toaster.sendErrorMessage(error);
+                return;
+            &#125;
+        &#125;).catch(this.coreApi.handleError)
+        .subscribe(data =&gt; &#123;
+            this.data.next(data);
+        &#125;,
+        error =&gt; &#123;
+            this.toaster.sendErrorMessage(error);
+        &#125;);
+    &#125;
+&#125;
+        </prism>
+        <p>
+            An Angular service that is used to retrieve and store data from API calls. It implements the <code class="snippet">IService</code>
+            interface and specifies that the <code class="snippet">data</code> property will be of type 
+            <code class="snippet">BehaviorSubject&lt;Data[]&gt;</code>. The only difference between the <code class="snippet">getData()</code> API
+            call, and the <code class="snippet">getShapedData()</code> API call is as follows:
+        </p>
+        <ul>
+            <li>
+                <code class="snippet">getData()</code> returns JSON objects that only specify the 
+                <code class="snippet">id</code> and <code class="snippet">displayName</code> properties.
+            </li>
+            <li>
+                <code class="snippet">getShapedData()</code> returns JSON objects that explicitly include a readonly 
+                <code class="snippet">filter</code> property that returns the value of <code class="snippet">displayName</code>.
+            </li>
+        </ul>
+    </md-card-content>
+</md-card>

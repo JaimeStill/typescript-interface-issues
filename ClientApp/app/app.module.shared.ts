@@ -11,18 +11,25 @@ import { NoCacheRequestOptions } from './services/no-cache-request-options';
 import { SidepanelService } from './services/sidepanel.service';
 import { AppService } from './services/app.service';
 
+import { PrismComponent } from './components/prism/prism.component';
+
 import { AppComponent } from './components/app/app.component';
+import { HomeComponent } from './components/home/home.component';
+import { MappedClientComponent } from './components/mapped-client/mapped-client.component';
 import { SidepanelComponent } from './components/sidepanel/sidepanel.component';
-import { ForcedApiComponent } from './components/forced-api/forced-api.component';
-import { FailedApiComponent } from './components/failed-api/failed-api.component';
+import { ShapedApiComponent } from './components/shaped-api/shaped-api.component';
+import { PlainJsonComponent } from './components/plain-json/plain-json.component';
 
 export const sharedConfig: NgModule = {
     bootstrap: [ AppComponent ],
     declarations: [
+        PrismComponent,
         AppComponent,
+        HomeComponent,
+        MappedClientComponent,
         SidepanelComponent,
-        ForcedApiComponent,
-        FailedApiComponent
+        ShapedApiComponent,
+        PlainJsonComponent
     ],
     providers: [
         ThemeService,
@@ -35,10 +42,12 @@ export const sharedConfig: NgModule = {
     imports: [
         AppMaterialModule,
         RouterModule.forRoot([
-            { path: '', redirectTo: 'forced-api', pathMatch: 'full' },
-            { path: 'forced-api', component: ForcedApiComponent },
-            { path: 'failed-api', component: FailedApiComponent },
-            { path: '**', redirectTo: 'forced-api' }
+            { path: '', redirectTo: 'home', pathMatch: 'full' },
+            { path: 'home', component: HomeComponent },
+            { path: 'mapped-client', component: MappedClientComponent },
+            { path: 'shaped-api', component: ShapedApiComponent },
+            { path: 'plain-json', component: PlainJsonComponent },
+            { path: '**', redirectTo: 'home' }
         ])
     ]
 };

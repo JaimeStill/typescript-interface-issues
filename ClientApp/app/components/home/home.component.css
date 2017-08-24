@@ -1,0 +1,15 @@
+md-card.mat-card h3 {
+    margin: 2px 15px 5px 15px;
+}
+
+md-card.mat-card {
+    padding: 12px;
+    width: 50%;
+    min-width: 300px;
+}
+
+.prism-snippet {
+    width: 50%;
+    min-width: 300px;
+    margin: 15px;
+}

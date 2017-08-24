@@ -9,12 +9,13 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 
 @Component({
-    selector: 'failed-api',
-    templateUrl: 'failed-api.component.html',
-    styleUrls: ['failed-api.component.css'],
+    selector: 'plain-json',
+    templateUrl: 'plain-json.component.html',
+    styleUrls: ['plain-json.component.css'],
     providers: [DataService]
 })
-export class FailedApiComponent implements OnInit {
+export class PlainJsonComponent implements OnInit {
+    displayedColumns = ['id', 'displayName'];
     dataSource: CoreDataSource<Data> | null;
     @ViewChild('filter') filter: ElementRef;
 

@@ -9,7 +9,7 @@ export class ThemeService {
     activeTheme = new BehaviorSubject<Theme>(new Theme());
 
     constructor (private overlayContainer: OverlayContainer, private app: AppService) {
-        let theme = new Theme();
+        const theme = new Theme();
         theme.name = 'green-light';
         theme.display = 'Green - Light';
         this.activeTheme.next(theme);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace api_interface_issues.Models
 {
-    public class ForcedDataModel
+    public class ShapedDataModel
     {
         public int id { get; set; }
         public string displayName { get; set; }

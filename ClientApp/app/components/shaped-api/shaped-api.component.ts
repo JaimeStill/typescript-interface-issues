@@ -9,18 +9,18 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 
 @Component({
-    selector: 'forced-api',
-    templateUrl: 'forced-api.component.html',
-    styleUrls: ['forced-api.component.css'],
+    selector: 'shaped-api',
+    templateUrl: 'shaped-api.component.html',
+    styleUrls: ['shaped-api.component.css'],
     providers: [DataService]
 })
-export class ForcedApiComponent implements OnInit {
+export class ShapedApiComponent implements OnInit {
     displayedColumns = ['id', 'displayName'];
     dataSource: CoreDataSource<Data> | null;
     @ViewChild('filter') filter: ElementRef;
 
     constructor(private data: DataService, private toaster: ToasterService) {
-        data.getForcedData();
+        data.getShapedData();
     }
 
     ngOnInit() {

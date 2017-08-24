@@ -11,7 +11,6 @@ import { Theme } from '../models/theme.model';
 
 @Injectable()
 export class AppService {
-    redirectUrl = new BehaviorSubject<string>('');
     themes = new BehaviorSubject<Array<Theme>>([]);
 
     constructor(private toaster: ToasterService, private coreApi: CoreApiService, private router: Router) { }

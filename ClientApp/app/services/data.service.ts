@@ -7,33 +7,22 @@ import { CoreApiService } from './core-api.service';
 import { ToasterService } from './toaster.service';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
 
 @Injectable()
 export class DataService implements IService<Data> {
     data = new BehaviorSubject<Array<Data>>([]);
 
-    constructor(private http: Http, private coreApi: CoreApiService, private toaster: ToasterService) {}
+    constructor(private http: Http, private coreApi: CoreApiService, private toaster: ToasterService) {
+        this.data.asObservable().subscribe({error: (message) => toaster.sendErrorMessage(message)});
+    }
 
     getData() {
-        this.coreApi.get<Data[]>('/api/app/getData').subscribe(
-            data => {
-                this.data.next(data);
-            },
-            error => {
-                this.toaster.sendErrorMessage(error);
-            }
-        )
+        this.coreApi.get<Data[]>('/api/app/getData').subscribe(this.data);
     }
 
     getShapedData() {
-        this.coreApi.get<Data[]>('/api/app/getShapedData').subscribe(
-            data => {
-                this.data.next(data);
-            },
-            error => {
-                this.toaster.sendErrorMessage(error);
-            }
-        )
+        this.coreApi.get<Data[]>('/api/app/getShapedData').subscribe(this.data);
     }
 
     getInstantiatedData() {
@@ -42,11 +31,6 @@ export class DataService implements IService<Data> {
                 return Object.assign(new Data(), d)
             });
         }).catch(this.coreApi.handleError)
-        .subscribe(data => {
-            this.data.next(data);
-        },
-        error => {
-            this.toaster.sendErrorMessage(error);
-        });
+        .subscribe(this.data);
     }
 }

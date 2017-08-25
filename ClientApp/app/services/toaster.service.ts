@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MdSnackBar, MdSnackBarConfig } from '@angular/material';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ToasterService {
@@ -33,7 +34,7 @@ export class ToasterService {
         this.sendMessage();
     }
 
-    sendErrorMessage(message: string) {
+    sendErrorMessage(message: string | any) {
         this.message = message;
         this.setClasses(['toaster-red']);
         this.sendMessage();

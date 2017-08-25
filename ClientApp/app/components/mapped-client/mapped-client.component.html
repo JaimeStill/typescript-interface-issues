@@ -29,17 +29,12 @@
     <md-tab label="data.service.ts">
         <prism language="typescript">
 getInstantiatedData() &#123;
-    this.http.get('/api/app/getData').map(res =&gt; &#123;
-        return res.json().map(d =&gt; &#123;
+    this.http.get('/api/app/getData').map(res => &#123;
+        return res.json().map(d => &#123;
             return Object.assign(new Data(), d)
         &#125;);
     &#125;).catch(this.coreApi.handleError)
-    .subscribe(data =&gt; &#123;
-        this.data.next(data);
-    &#125;,
-    error =&gt; &#123;
-        this.toaster.sendErrorMessage(error);
-    &#125;);
+    .subscribe(this.data);
 &#125;
         </prism>
     </md-tab>

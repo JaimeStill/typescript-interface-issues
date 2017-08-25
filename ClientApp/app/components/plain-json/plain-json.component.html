@@ -66,14 +66,7 @@ public async Task&lt;IEnumerable&lt;DataModel&gt;&gt; GetData()
     <md-tab label="data.service.ts">
         <prism language="typescript">
 getData() &#123;
-    this.coreApi.get&lt;Data[]&gt;('/api/app/getData').subscribe(
-        data =&gt; &#123;
-            this.data.next(data);
-        &#125;,
-        error =&gt; &#123;
-            this.toaster.sendErrorMessage(error);
-        &#125;
-    )
+    this.coreApi.get&lt;Data[]&gt;('/api/app/getData').subscribe(this.data);
 &#125;
         </prism>
     </md-tab>

@@ -67,14 +67,7 @@ public async Task&lt;IEnumerable&lt;ShapedDataModel&gt;&gt; GetShapedData()
     <md-tab label="data.service.ts">
         <prism language="typescript">
 getShapedData() &#123;
-    this.coreApi.get&lt;Data[]&gt;('/api/app/getShapedData').subscribe(
-        data =&gt; &#123;
-            this.data.next(data);
-        &#125;,
-        error =&gt; &#123;
-            this.toaster.sendErrorMessage(error);
-        &#125;
-    );
+    this.coreApi.get&lt;Data[]&gt;('/api/app/getShapedData').subscribe(this.data);
 &#125;
         </prism>
     </md-tab>

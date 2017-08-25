@@ -244,49 +244,36 @@ import &#123; CoreApiService &#125; from './core-api.service';
 import &#123; ToasterService &#125; from './toaster.service';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-                
+import 'rxjs/add/observable/throw';
+            
 @Injectable()
 export class DataService implements IService&lt;Data&gt; &#123;
     data = new BehaviorSubject&lt;Array&lt;Data&gt;&gt;([]);
-                
-    constructor(private http: Http, private coreApi: CoreApiService, private toaster: ToasterService) &#123;&#125;
-                
+            
+    constructor(private http: Http, 
+                private coreApi: CoreApiService, 
+                private toaster: ToasterService) &#123;
+        this.data.asObservable()
+            .subscribe(&#123;error: (message) =&gt; toaster.sendErrorMessage(message)&#125;);
+    &#125;
+            
     getData() &#123;
-        this.coreApi.get&lt;Data[]&gt;('/api/app/getData').subscribe(
-            data =&gt; &#123;
-                this.data.next(data);
-            &#125;,
-            error =&gt; &#123;
-                this.toaster.sendErrorMessage(error);
-            &#125;
-        )
+        this.coreApi.get&lt;Data[]&gt;('/api/app/getData').subscribe(this.data);
     &#125;
-                
+            
     getShapedData() &#123;
-        this.coreApi.get&lt;Data[]&gt;('/api/app/getShapedData').subscribe(
-            data =&gt; &#123;
-                this.data.next(data);
-            &#125;,
-            error =&gt; &#123;
-                this.toaster.sendErrorMessage(error);
-            &#125;
-        )
+        this.coreApi.get&lt;Data[]&gt;('/api/app/getShapedData').subscribe(this.data);
     &#125;
-                
+            
     getInstantiatedData() &#123;
         this.http.get('/api/app/getData').map(res =&gt; &#123;
             return res.json().map(d =&gt; &#123;
                 return Object.assign(new Data(), d)
             &#125;);
         &#125;).catch(this.coreApi.handleError)
-        .subscribe(data =&gt; &#123;
-            this.data.next(data);
-        &#125;,
-        error =&gt; &#123;
-            this.toaster.sendErrorMessage(error);
-        &#125;);
+        .subscribe(this.data);
     &#125;
-&#125;
+&#125;            
         </prism>
         <p>
             An Angular service that is used to retrieve and store data from API calls. It implements the <code class="snippet">IService</code>
